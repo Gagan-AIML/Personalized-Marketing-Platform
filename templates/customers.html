@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customers - AI Marketing</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav>
+    <div class="logo">AI Marketing</div>
+    <div class="nav-links">
+      <span>Welcome, {{ username }}</span>
+      <a href="/dashboard" class="btn">Dashboard</a>
+      <a href="/analytics" class="btn">Analytics</a>
+      <a href="/logout" class="btn btn-primary">Logout</a>
+    </div>
+  </nav>
+  <div class="field">
+  <label>Interest (e.g., electronics, gadgets, computers, music)</label>
+  <input type="text" name="interest" placeholder="Interest" required>
+</div>
+
+
+  <div class="dashboard-container">
+    <section class="launch-campaign">
+      <h2>Add Customer</h2>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class="flash-messages soft">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="/customers" class="grid-form">
+        <div class="field">
+          <label>Customer ID (Email or Unique ID)</label>
+          <input type="text" name="customer_id" placeholder="e.g., customer01@example.com" required>
+        </div>
+
+        <div class="field">
+          <label>Customer Name (optional)</label>
+          <input type="text" name="name" placeholder="e.g., Rahul Sharma">
+        </div>
+
+        <button type="submit" class="btn btn-primary full-width">Add Customer</button>
+      </form>
+    </section>
+
+    <section class="campaigns">
+      <h2>Saved Customers</h2>
+
+      {% if customers %}
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer ID</th>
+                <th>Name</th>
+                <th>Created</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in customers %}
+                <tr>
+                  <td>{{ c.customer_id }}</td>
+                  <td>{{ c.name }}</td>
+                  <td>{{ c.created_at }}</td>
+                  <td>
+                    <form method="POST" action="/customers/delete/{{ c.customer_id }}" class="inline-form"
+                          onsubmit="return confirm('Delete this customer? This will also delete their campaigns.');">
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <p class="muted" style="margin-top: 0.75em;">Total campaigns currently stored: {{ campaign_count }}</p>
+      {% else %}
+        <p>No customers added yet.</p>
+      {% endif %}
+    </section>
+  </div>
+</body>
+</html>

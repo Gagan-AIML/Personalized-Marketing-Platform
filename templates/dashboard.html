@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - AI Marketing</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav>
+    <div class="logo">AI Marketing</div>
+    <div class="nav-links">
+      <span>Welcome, {{ username }}</span>
+      <a href="/customers" class="btn">Customers</a>
+      <a href="/analytics" class="btn">Analytics</a>
+      <a href="/logout" class="btn btn-primary">Logout</a>
+    </div>
+  </nav>
+
+  <div class="dashboard-container">
+
+    <section class="launch-campaign">
+      <h2>Launch New Campaign</h2>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class="flash-messages soft">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="/launch_campaign" class="grid-form">
+        <div class="field">
+          <label for="customer_id">Select Customer</label>
+          <select id="customer_id" name="customer_id" required>
+            <option value="">Choose a customer</option>
+            {% for c in customers %}
+              <option value="{{ c.customer_id }}">{{ c.customer_id }} ({{ c.name }})</option>
+            {% endfor %}
+          </select>
+          <small class="hint">Not seeing a customer? <a href="/customers">Add one here</a></small>
+        </div>
+
+        <div class="field">
+          <label for="product">Select Product</label>
+          <select id="product" name="product" required>
+            <option value="">Choose product</option>
+            <option value="AI Recommended">AI Recommended</option>
+            <option value="Wireless Headphones">Wireless Headphones</option>
+            <option value="Smartwatch">Smartwatch</option>
+            <option value="Laptop">Laptop</option>
+            <option value="Bluetooth Speaker">Bluetooth Speaker</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary full-width">Launch Campaign</button>
+      </form>
+    </section>
+
+    <section class="campaigns">
+      <h2>Existing Campaigns</h2>
+
+      {% if campaigns %}
+        <div class="campaign-grid">
+          {% for c in campaigns %}
+            <div class="campaign-card">
+              <div class="card-top">
+                <h3>{{ c.customer_id }}</h3>
+                <span class="pill">{{ c.status }}</span>
+              </div>
+              <p><b>Product:</b> {{ c.product }}</p>
+              <p class="muted"><b>Time:</b> {{ c.created_at }}</p>
+
+              <form method="POST" action="/campaigns/delete/{{ c.id }}" class="inline-form">
+                <input type="hidden" name="next" value="dashboard">
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No campaigns yet. Launch your first campaign above!</p>
+      {% endif %}
+    </section>
+
+  </div>
+</body>
+</html>

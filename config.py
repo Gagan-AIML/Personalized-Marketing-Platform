@@ -1,0 +1,7 @@
+# config.py
+
+AWS_REGION = "ap-south-1"
+DYNAMODB_TABLE = "Users"
+SNS_TOPIC_ARN = "YOUR_SNS_TOPIC_ARN"
+
+APP_BASE_URL = "http://YOUR_EC2_PUBLIC_IP:5000"

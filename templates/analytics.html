@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Analytics - AI Marketing</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav>
+    <div class="logo">AI Marketing</div>
+    <div class="nav-links">
+      <span>Welcome, {{ username }}</span>
+      <a href="/dashboard" class="btn">Dashboard</a>
+      <a href="/customers" class="btn">Customers</a>
+      <a href="/logout" class="btn btn-primary">Logout</a>
+    </div>
+  </nav>
+
+  <div class="dashboard-container">
+    <h2>Campaign Analytics</h2>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <form method="GET" action="/analytics" class="filter-form">
+        <div class="field">
+          <label for="customer">Filter by Customer</label>
+          <select id="customer" name="customer" title="Filter by Customer">
+            <option value="">All Customers</option>
+            {% for c in customers %}
+              <option value="{{ c.customer_id }}" {% if customer_filter == c.customer_id %}selected{% endif %}>
+                {{ c.customer_id }} ({{ c.name }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Search</label>
+          <input type="text" name="q" placeholder="Search customer/product/status/time"
+                 value="{{ q or '' }}">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Apply</button>
+        <a href="/analytics" class="btn">Reset</a>
+      </form>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <p class="stat-label">Total Campaigns</p>
+        <h3 class="stat-value">{{ total_campaigns }}</h3>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Sent</p>
+        <h3 class="stat-value">{{ sent_campaigns }}</h3>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Avg Open Rate</p>
+        <h3 class="stat-value">{{ avg_open }}%</h3>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Avg Click Rate</p>
+        <h3 class="stat-value">{{ avg_click }}%</h3>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Total Conversions</p>
+        <h3 class="stat-value">{{ total_conversions }}</h3>
+      </div>
+    </div>
+
+    <section class="campaigns">
+      <h2 style="margin-top: 1.2em;">Recent Campaigns</h2>
+
+      {% if campaigns %}
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Customer</th>
+                <th>Product</th>
+                <th>Status</th>
+                <th>Open</th>
+                <th>Click</th>
+                <th>Conv</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in campaigns %}
+                <tr>
+                  <td>{{ c.created_at }}</td>
+                  <td>{{ c.customer_id }}</td>
+                  <td>{{ c.product }}</td>
+                  <td><span class="pill">{{ c.status }}</span></td>
+                  <td>{{ c.open_rate }}%</td>
+                  <td>{{ c.click_rate }}%</td>
+                  <td>{{ c.conversions }}</td>
+                  <td>
+                    <form method="POST" action="/campaigns/delete/{{ c.id }}" class="inline-form"
+                          onsubmit="return confirm('Delete this campaign?');">
+                      <input type="hidden" name="next" value="analytics">
+                      <input type="hidden" name="customer" value="{{ customer_filter }}">
+                      <input type="hidden" name="q" value="{{ q }}">
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p>No campaigns match your filter/search.</p>
+      {% endif %}
+    </section>
+  </div>
+</body>
+</html>
