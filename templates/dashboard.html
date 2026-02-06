@@ -74,7 +74,8 @@
               <p><b>Product:</b> {{ c.product }}</p>
               <p class="muted"><b>Time:</b> {{ c.created_at }}</p>
 
-              <form method="POST" action="/campaigns/delete/{{ c.id }}" class="inline-form">
+              <form method="POST" action="/campaigns/delete/{{ c.campaign_id }}" class="inline-form"
+                    onsubmit="return confirm('Delete this campaign?');">
                 <input type="hidden" name="next" value="dashboard">
                 <button type="submit" class="btn btn-danger">Delete</button>
               </form>
